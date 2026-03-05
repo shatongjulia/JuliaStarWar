@@ -10,7 +10,8 @@ import {
   POWERUP_CONFIGS,
   VICTORY_LEVEL
 } from '../constants';
-import { GameState, EnemyType, PowerUpType, GameStats, Achievement } from '../types';
+import { GameState, EnemyType, PowerUpType, GameStats } from '../types';
+import { audioService } from '../services/audioService';
 
 interface GameCanvasProps {
   gameState: GameState;
@@ -352,6 +353,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, onGameOver, onUpdate
       } else {
         bulletsRef.current.push(new Bullet(player.x, player.y));
       }
+      audioService.playLaser();
       player.lastShot = time;
     }
 
@@ -461,6 +463,7 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, onGameOver, onUpdate
             for (let k = 0; k < 15; k++) {
               particlesRef.current.push(new Particle(enemy.x, enemy.y, enemy.color));
             }
+            audioService.playExplosion();
             enemiesRef.current.splice(ei, 1);
           }
         }
