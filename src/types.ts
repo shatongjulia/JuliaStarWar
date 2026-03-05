@@ -2,7 +2,8 @@ export enum GameState {
   START = 'START',
   PLAYING = 'PLAYING',
   PAUSED = 'PAUSED',
-  GAME_OVER = 'GAME_OVER'
+  GAME_OVER = 'GAME_OVER',
+  WIN = 'WIN'
 }
 
 export enum EnemyType {

@@ -7,7 +7,8 @@ import {
   BULLET_SPEED, 
   BULLET_SIZE,
   ENEMY_CONFIGS,
-  POWERUP_CONFIGS
+  POWERUP_CONFIGS,
+  VICTORY_LEVEL
 } from '../constants';
 import { GameState, EnemyType, PowerUpType, GameStats, Achievement } from '../types';
 
@@ -130,25 +131,60 @@ class Enemy {
 
     // Draw enemy shape based on type
     if (this.type === EnemyType.BASIC) {
+      // Main body
       ctx.beginPath();
-      ctx.moveTo(0, this.size);
-      ctx.lineTo(-this.size/2, -this.size/2);
-      ctx.lineTo(this.size/2, -this.size/2);
+      ctx.moveTo(0, this.size / 2);
+      ctx.lineTo(-this.size / 2, -this.size / 2);
+      ctx.lineTo(0, -this.size / 4);
+      ctx.lineTo(this.size / 2, -this.size / 2);
       ctx.closePath();
+      ctx.fill();
+      
+      // Wings
+      ctx.strokeStyle = this.color;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-this.size / 2, -this.size / 2);
+      ctx.lineTo(-this.size * 0.7, 0);
+      ctx.moveTo(this.size / 2, -this.size / 2);
+      ctx.lineTo(this.size * 0.7, 0);
+      ctx.stroke();
+
+      // Core
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(0, 0, this.size / 6, 0, Math.PI * 2);
       ctx.fill();
     } else if (this.type === EnemyType.FAST) {
+      // Sleek body
       ctx.beginPath();
-      ctx.moveTo(0, this.size);
-      ctx.lineTo(-this.size/3, 0);
-      ctx.lineTo(0, -this.size/2);
-      ctx.lineTo(this.size/3, 0);
+      ctx.moveTo(0, this.size / 2);
+      ctx.lineTo(-this.size / 3, -this.size / 2);
+      ctx.lineTo(0, -this.size / 3);
+      ctx.lineTo(this.size / 3, -this.size / 2);
       ctx.closePath();
       ctx.fill();
+
+      // Side fins
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = 0.6;
+      ctx.fillRect(-this.size / 2, -this.size / 4, this.size / 6, this.size / 2);
+      ctx.fillRect(this.size / 2 - this.size / 6, -this.size / 4, this.size / 6, this.size / 2);
+      ctx.globalAlpha = 1;
     } else {
-      ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
-      // Heavy detail
+      // Heavy Tanker
+      ctx.roundRect(-this.size / 2, -this.size / 2, this.size, this.size, 8);
+      ctx.fill();
+      
+      // Armor plates
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-this.size / 3, -this.size / 3, this.size * 0.66, this.size * 0.66);
+      
+      // Turrets
       ctx.fillStyle = '#000';
-      ctx.fillRect(-this.size/4, -this.size/4, this.size/2, this.size/2);
+      ctx.fillRect(-this.size / 4, -this.size / 2, this.size / 8, this.size / 4);
+      ctx.fillRect(this.size / 8, -this.size / 2, this.size / 8, this.size / 4);
     }
 
     // Health bar for heavy
@@ -407,6 +443,9 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, onGameOver, onUpdate
             // Level Up
             if (stats.score >= nextLevelScoreRef.current) {
               stats.level++;
+              if (stats.level >= VICTORY_LEVEL) {
+                onGameOver({ ...stats }); // We'll handle victory in App.tsx
+              }
               nextLevelScoreRef.current += 1000 * stats.level;
               enemiesRef.current = []; // Clear screen
               if (stats.level === 5) onAchievementUnlock('unstoppable');
@@ -513,16 +552,45 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ gameState, onGameOver, onUpdate
       ctx.fill();
 
       // Ship Body
-      ctx.shadowBlur = 15;
+      ctx.shadowBlur = 20;
       ctx.shadowColor = '#3b82f6';
-      ctx.fillStyle = '#fff';
+      
+      // Main Hull
+      const hullGradient = ctx.createLinearGradient(0, -PLAYER_SIZE/2, 0, PLAYER_SIZE/2);
+      hullGradient.addColorStop(0, '#fff');
+      hullGradient.addColorStop(1, '#cbd5e1');
+      ctx.fillStyle = hullGradient;
+      
       ctx.beginPath();
       ctx.moveTo(0, -PLAYER_SIZE/2);
+      ctx.lineTo(-PLAYER_SIZE/4, -PLAYER_SIZE/4);
       ctx.lineTo(-PLAYER_SIZE/2, PLAYER_SIZE/2);
-      ctx.lineTo(0, PLAYER_SIZE/3);
+      ctx.lineTo(0, PLAYER_SIZE/4);
       ctx.lineTo(PLAYER_SIZE/2, PLAYER_SIZE/2);
+      ctx.lineTo(PLAYER_SIZE/4, -PLAYER_SIZE/4);
       ctx.closePath();
       ctx.fill();
+
+      // Cockpit Detail
+      ctx.fillStyle = '#0ea5e9';
+      ctx.beginPath();
+      ctx.ellipse(0, -PLAYER_SIZE/8, PLAYER_SIZE/8, PLAYER_SIZE/6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Wing details
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-PLAYER_SIZE/4, -PLAYER_SIZE/4);
+      ctx.lineTo(-PLAYER_SIZE/2, PLAYER_SIZE/4);
+      ctx.moveTo(PLAYER_SIZE/4, -PLAYER_SIZE/4);
+      ctx.lineTo(PLAYER_SIZE/2, PLAYER_SIZE/4);
+      ctx.stroke();
+
+      // Engine Thrusters
+      ctx.fillStyle = '#3b82f6';
+      ctx.fillRect(-PLAYER_SIZE/6, PLAYER_SIZE/3, PLAYER_SIZE/12, PLAYER_SIZE/6);
+      ctx.fillRect(PLAYER_SIZE/6 - PLAYER_SIZE/12, PLAYER_SIZE/3, PLAYER_SIZE/12, PLAYER_SIZE/6);
 
       // Cockpit
       ctx.fillStyle = '#3b82f6';

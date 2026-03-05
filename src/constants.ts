@@ -7,6 +7,8 @@ export const PLAYER_SIZE = 40;
 export const BULLET_SPEED = 10;
 export const BULLET_SIZE = 4;
 
+export const VICTORY_LEVEL = 10;
+
 export const ENEMY_CONFIGS = {
   BASIC: {
     speed: 3,

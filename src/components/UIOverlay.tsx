@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Play, Info, Shield, Zap, Target, Trophy, Flame, Pause, RotateCcw, Home } from 'lucide-react';
+import { Play, Info, Shield, Zap, Target, Trophy, Flame, Pause, RotateCcw, Home, Smartphone, MousePointer2 } from 'lucide-react';
 import { GameState, GameStats, Achievement } from '../types';
 
 interface UIOverlayProps {
@@ -84,26 +84,25 @@ export const UIOverlay: React.FC<UIOverlayProps> = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-left">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
               <div className="glass p-3 rounded-xl">
                 <div className="flex items-center gap-2 text-xs font-bold text-white/80 mb-2">
-                  <Info size={14} className="text-blue-400" />
-                  操作指南
+                  <MousePointer2 size={14} className="text-blue-400" />
+                  电脑端操作
                 </div>
                 <ul className="text-[10px] text-white/50 space-y-1">
                   <li>• 方向键/WASD 移动</li>
-                  <li>• 空格键 射击</li>
-                  <li>• P键 暂停</li>
+                  <li>• 空格键 射击 | P键 暂停</li>
                 </ul>
               </div>
               <div className="glass p-3 rounded-xl">
                 <div className="flex items-center gap-2 text-xs font-bold text-white/80 mb-2">
-                  <Zap size={14} className="text-amber-400" />
-                  道具说明
+                  <Smartphone size={14} className="text-emerald-400" />
+                  手机端操作
                 </div>
                 <ul className="text-[10px] text-white/50 space-y-1">
-                  <li>• T: 三向子弹</li>
-                  <li>• S: 能量护盾</li>
+                  <li>• 触摸屏幕 移动战机</li>
+                  <li>• 移动时 自动射击</li>
                 </ul>
               </div>
             </div>
@@ -205,22 +204,67 @@ export const UIOverlay: React.FC<UIOverlayProps> = ({
         )}
       </AnimatePresence>
 
+      {/* Victory Screen */}
+      <AnimatePresence>
+        {gameState === GameState.WIN && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-dark p-10 rounded-[2.5rem] max-w-md w-full text-center pointer-events-auto border-amber-400/50"
+          >
+            <div className="w-20 h-20 bg-amber-400/20 rounded-full flex items-center justify-center text-amber-400 mx-auto mb-6 animate-pulse">
+              <Trophy size={48} />
+            </div>
+            <h2 className="text-4xl font-display font-black mb-2 text-amber-400">任务成功</h2>
+            <p className="text-white/40 mb-8 uppercase tracking-widest text-xs">Mission Accomplished</p>
+            
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="glass p-4 rounded-2xl">
+                <div className="text-[10px] text-white/40 uppercase font-display">Final Score</div>
+                <div className="text-2xl font-display font-bold text-amber-400">{stats.score.toLocaleString()}</div>
+              </div>
+              <div className="glass p-4 rounded-2xl">
+                <div className="text-[10px] text-white/40 uppercase font-display">Level Reached</div>
+                <div className="text-2xl font-display font-bold text-amber-400">{stats.level}</div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button 
+                onClick={onRestart}
+                className="w-full py-4 bg-amber-600 hover:bg-amber-500 text-white rounded-xl font-display font-bold text-lg transition-all shadow-[0_0_20px_rgba(217,119,6,0.4)] flex items-center justify-center gap-2"
+              >
+                <RotateCcw size={20} />
+                再次挑战
+              </button>
+              <button 
+                onClick={onHome}
+                className="w-full py-3 bg-white/10 text-white rounded-xl font-bold hover:bg-white/20 transition-colors flex items-center justify-center gap-2"
+              >
+                <Home size={18} />
+                返回主页
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Achievement Notification */}
       <AnimatePresence>
         {unlockedAchievement && (
           <motion.div 
             initial={{ opacity: 0, y: -100, x: '-50%' }}
-            animate={{ opacity: 1, y: 20, x: '-50%' }}
+            animate={{ opacity: 1, y: 40, x: '-50%' }}
             exit={{ opacity: 0, scale: 0.8, x: '-50%' }}
-            className="fixed top-0 left-1/2 glass p-4 rounded-2xl flex items-center gap-4 min-w-[280px] z-50 border-amber-400/50"
+            className="fixed top-0 left-1/2 glass p-4 rounded-2xl flex items-center gap-4 min-w-[280px] sm:min-w-[320px] z-[100] border-amber-400/50 shadow-[0_0_30px_rgba(251,191,36,0.2)]"
           >
-            <div className="w-12 h-12 rounded-xl bg-amber-400/20 flex items-center justify-center text-amber-400">
+            <div className="w-12 h-12 rounded-xl bg-amber-400/20 flex items-center justify-center text-amber-400 shrink-0">
               <Trophy size={24} />
             </div>
-            <div>
+            <div className="text-left">
               <div className="text-[10px] text-amber-400 font-bold uppercase tracking-widest">成就解锁!</div>
-              <div className="text-sm font-bold">{unlockedAchievement.title}</div>
-              <div className="text-[10px] text-white/50">{unlockedAchievement.description}</div>
+              <div className="text-sm font-bold text-white">{unlockedAchievement.title}</div>
+              <div className="text-[10px] text-white/60 leading-tight">{unlockedAchievement.description}</div>
             </div>
           </motion.div>
         )}

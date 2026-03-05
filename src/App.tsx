@@ -2,7 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import GameCanvas from './components/GameCanvas';
 import { UIOverlay } from './components/UIOverlay';
 import { GameState, GameStats, Achievement } from './types';
-import { INITIAL_ACHIEVEMENTS } from './constants';
+import { INITIAL_ACHIEVEMENTS, VICTORY_LEVEL } from './constants';
 
 export default function App() {
   const [gameState, setGameState] = useState<GameState>(GameState.START);
@@ -31,7 +31,11 @@ export default function App() {
 
   const handleGameOver = (finalStats: GameStats) => {
     setStats(finalStats);
-    setGameState(GameState.GAME_OVER);
+    if (finalStats.level >= VICTORY_LEVEL) {
+      setGameState(GameState.WIN);
+    } else {
+      setGameState(GameState.GAME_OVER);
+    }
   };
 
   const handleUpdateStats = useCallback((newStats: GameStats) => {
