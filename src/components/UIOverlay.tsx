@@ -70,7 +70,7 @@ export const UIOverlay: React.FC<UIOverlayProps> = ({
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-red-500" />
             <h1 className="text-5xl font-display font-black mb-2 tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50">
-              JULIA<br/>星际先锋
+              Julia<br/>星际先锋
             </h1>
             <p className="text-white/60 mb-8 text-sm tracking-widest uppercase">Star Pioneer</p>
             

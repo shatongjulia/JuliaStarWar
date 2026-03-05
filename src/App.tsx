@@ -3,6 +3,7 @@ import GameCanvas from './components/GameCanvas';
 import { UIOverlay } from './components/UIOverlay';
 import { GameState, GameStats, Achievement } from './types';
 import { INITIAL_ACHIEVEMENTS, VICTORY_LEVEL } from './constants';
+import { audioService } from './services/audioService';
 
 export default function App() {
   const [gameState, setGameState] = useState<GameState>(GameState.START);

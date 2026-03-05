@@ -2,15 +2,13 @@ class AudioService {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
 
-  constructor() {
-    // Context is initialized on first user interaction to comply with browser policies
-  }
+  constructor() {}
 
   private init() {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.value = 0.3; // Global volume
+    this.masterGain.gain.value = 0.3;
     this.masterGain.connect(this.ctx.destination);
   }
 
@@ -24,7 +22,7 @@ class AudioService {
     const osc = this.ctx.createOscillator();
     const oscGain = this.ctx.createGain();
     
-    osc.type = 'square'; // Square gives that "electric" buzzy feel
+    osc.type = 'square';
     osc.frequency.setValueAtTime(1200, now);
     osc.frequency.exponentialRampToValueAtTime(40, now + 0.1);
     
@@ -54,9 +52,8 @@ class AudioService {
     const delay = this.ctx.createDelay();
     delay.delayTime.value = 0.05;
     const delayGain = this.ctx.createGain();
-    delayGain.gain.value = 0.3; // Feedback amount
+    delayGain.gain.value = 0.3;
     
-    // Connections
     osc.connect(oscGain);
     oscGain.connect(this.masterGain);
     
@@ -64,14 +61,12 @@ class AudioService {
     noiseFilter.connect(noiseGain);
     noiseGain.connect(this.masterGain);
     
-    // Connect to delay for echo
     oscGain.connect(delay);
     noiseGain.connect(delay);
     delay.connect(delayGain);
-    delayGain.connect(delay); // Feedback loop
+    delayGain.connect(delay);
     delayGain.connect(this.masterGain);
     
-    // Start and Stop
     osc.start(now);
     osc.stop(now + 0.15);
     noise.start(now);
